@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Design</title>
+    <link rel="stylesheet" href="Design.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="head">
+		<h1>Database Design</h1>
+	</div>
+
+
+    <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="Indledning.html">Indledning</a></li>
+        <li><a href="Database_design.html">Database Desgin</a></li>
+        <li><a href="Webteknologi.html">Webteknologi</a></li>
+        <li><a href="Database_script.html">Database script</a></li>
+        <li><a href="sql_statements.html">Simple SQL statements</a></li>
+    
+      </ul>
+
+    <p>
+        DROP DATABASE IF EXISTS Project_store;<br/>
+        CREATE DATABASE Project_store;<br/>
+        USE Project_store;<br/>
+        <br/>
+        CREATE TABLE Customers(<br/>
+        Customer_ID int NOT NULL AUTO_INCREMENT,<br/>
+        CustomerType varchar(45) NOT NULL,<br/>
+        PRIMARY KEY(Customer_ID)<br/>
+        );<br/>
+        insert into Customers(CustomerType) values('Wholesaler');<br/>
+        insert into Customers(CustomerType) values('Retailer');<br/>
+        <br/>
+        CREATE TABLE Orders(<br/>
+        Order_ID varchar(45) NOT NULL,<br/>
+        Customer_ID int NOT NULL,<br/>
+        Order_date date,<br/>
+        PRIMARY KEY(Order_ID),<br/>
+        FOREIGN KEY (Customer_ID) REFERENCES Customers(Customer_ID)<br/>
+        );<br/>
+        insert into Orders(Order_ID, Customer_ID, Order_date) values('20210226001', 1, '2021-02-26');<br/>
+        insert into Orders(Order_ID, Customer_ID, Order_date) values('20210226002', 2, '2021-02-26');<br/>
+        <br/>
+        CREATE TABLE Products(<br/>
+        Product_ID int NOT NULL AUTO_INCREMENT,<br/>
+        Name varchar(45) NOT NULL,<br/>
+        Quantity_in_stock int NOT NULL,<br/>
+        Unit_price float NOT NULL,<br/>
+        PRIMARY KEY(Product_ID)<br/>
+        );<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item1', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item2', 10, 112);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item3', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item4', 3, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item5', 15, 0.2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item6', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item7', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item8', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item9', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item10', 50, 0.15);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item11', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item12', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item13', 20, 2);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item14', 150, 0.45);<br/>
+        insert into Products(Name, Quantity_in_stock, Unit_price) values('Item15', 20, 2);<br/>
+        <br/>
+        CREATE TABLE Orderline(<br/>
+        Orderline_ID int NOT NULL AUTO_INCREMENT,<br/>
+        Order_ID varchar(45) NOT NULL,<br/>
+        Product_ID int NOT NULL,<br/>
+        Quantity int NOT NULL,<br/>
+        Price float NOT NULL,<br/>
+        PRIMARY KEY(Orderline_ID),<br/>
+        FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),<br/>
+        FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)<br/>
+        );<br/>
+        insert into Orderline(Order_ID, Product_ID, Quantity, Price) values('20210226001', 10, 150, 22);<br/>
+        insert into Orderline(Order_ID, Product_ID, Quantity, Price) values('20210226001', 14, 100, 45);<br/>
+        insert into Orderline(Order_ID, Product_ID, Quantity, Price) values('20210226002', 2, 5, 560);<br/>
+        insert into Orderline(Order_ID, Product_ID, Quantity, Price) values('20210226002', 5, 8, 40);<br/>
+        insert into Orderline(Order_ID, Product_ID, Quantity, Price) values('20210226002', 10, 1, 25);<br/>
+        <br/>
+        DELIMITER //<br/>
+        CREATE PROCEDURE `CreateOrder`(in cCustomertype varchar(45), in cProduct_ID int, in cQuantity int)<br/>
+        cr: BEGIN<br/>
+          DECLARE cdate int;<br/>
+          DECLARE max_value INT;<br/>
+          DECLARE cOrder_ID varchar(45);<br/>
+          DECLARE cCustomer_ID int;<br/>
+          DECLARE cUnit_price float;<br/>
+          DECLARE cPrice float;<br/>
+          DECLARE cQuantity_in_stock int;<br/>
+        <br/>
+          select Quantity_in_stock into cQuantity_in_stock from Products where Product_ID = cProduct_ID;<br/>
+        <br/>
+          if cQuantity_in_stock < 1 or cQuantity > cQuantity_in_stock then<br/>
+             LEAVE cr;<br/>
+          end if;<br/>
+        <br/>
+          SET cdate=CURRENT_DATE();<br/>
+        <br/>
+          select right(max(Order_ID), 3) into max_value FROM orders;<br/>
+          set max_value = max_value + 1;<br/>
+          if max_value < 10 then<br/>
+            set cOrder_ID = concat(cdate, '00', max_value);<br/>
+          elseif  max_value > 9 and max_value < 100 then<br/>
+            set cOrder_ID = concat(cdate, '0', max_value);<br/>
+          elseif  max_value > 99 and max_value < 1000 then<br/>
+            set cOrder_ID = concat(cdate, max_value);<br/>
+          end if;<br/>
+        <br/>
+          insert into Customers(CustomerType) values(cCustomertype);<br/>
+          select max(Customer_ID) into cCustomer_ID from customers;<br/>
+          insert into Orders(Order_ID,  Customer_ID, Order_date) values(cOrder_ID, cCustomer_ID, cdate);<br/>
+          select Unit_price into cUnit_price from Products where Product_ID = cProduct_ID;<br/>
+          set cPrice = cUnit_price * cQuantity;<br/>
+          insert into Orderline(Order_ID, Product_ID, Quantity, Price) values(cOrder_ID, cProduct_ID, cQuantity, cPrice);<br/>
+          update Products set Quantity_in_stock = Quantity_in_stock - cQuantity where Product_ID = cProduct_ID;<br/>
+        END //<br/>
+        <br/>
+        DELIMITER ;<br/>
+        <br/>
+        START TRANSACTION;<br/>
+        call CreateOrder("Testsaler", 12, 4);<br/>
+        COMMIT;<br/>
+        <br/>
+        <br/>
+        DELIMITER //<br/>
+        CREATE PROCEDURE `CheckQuantityInStock`(in cProduct_ID int)<br/>
+        BEGIN<br/>
+          DECLARE cQuantityInStock int;<br/>
+          select Quantity_in_stock into cQuantityInStock from Products where Product_ID = cProduct_ID;<br/>
+          if cQuantityInStock < 5 then<br/>
+            SIGNAL SQLSTATE '45000'<br/>
+            SET MESSAGE_TEXT = 'Mindre end fem enheder på lager af den pågældende vare!';<br/>
+          end if;<br/>
+        END //<br/>
+        <br/>
+        DELIMITER ;<br/>
+        <br/>
+        CREATE TABLE Orders_audit (<br/>
+        ID int NOT NULL AUTO_INCREMENT,<br/>
+        Order_ID varchar(45) NOT NULL,<br/>
+        Customer_ID int DEFAULT NULL,<br/>
+        Order_date date DEFAULT NULL,<br/>
+        changedat DATETIME DEFAULT NULL,<br/>
+        action VARCHAR(50) DEFAULT NULL,<br/>
+        PRIMARY KEY(ID)<br/>
+        );<br/>
+        <br/>
+        CREATE TRIGGER before_order_update<br/>
+        BEFORE UPDATE ON Orders<br/>
+        FOR EACH ROW<br/>
+        INSERT INTO Orders_audit<br/>
+        SET action = 'update', Order_ID=OLD.Order_ID, Customer_ID=OLD.Customer_ID, Order_date = OLD.Order_date, changedat = NOW();<br/>
+        <br/>
+        CREATE TRIGGER before_order_delete<br/>
+        BEFORE DELETE ON Orders<br/>
+        FOR EACH ROW<br/>
+        INSERT INTO Orders_audit<br/>
+        SET action = 'delete', Order_ID=OLD.Order_ID, Customer_ID=OLD.Customer_ID, Order_date = OLD.Order_date, changedat = NOW();<br/>
+        <br/>
+        CREATE TRIGGER before_order_insert<br/>
+        BEFORE INSERT ON Orders<br/>
+        FOR EACH ROW<br/>
+        INSERT INTO Orders_audit<br/>
+        SET action = 'insert', Order_ID=NEW.Order_ID, Customer_ID=NEW.Customer_ID, Order_date = NEW.Order_date, changedat = NOW();<br/>
+        <br/>
+        update Orders set Order_date="2022-03-30" where Order_ID="20210226002";<br/>
+        delete from Orderline where Order_ID="20210226002";<br/>
+        delete from Orders where Order_ID="20210226002";<br/>
+        call CreateOrder("Tempsaler", 6, 7);<br/>
+        <br/>
+        drop user if exists alice@localhost, bob@localhost, super@localhost;<br/>
+        create user if not exists bob@localhost identified by 'test', alice@localhost identified by 'test', super@localhost identified by 'test';<br/>
+        GRANT INSERT, UPDATE, DELETE ON *.* TO bob@localhost, alice@localhost;<br/>
+        GRANT SELECT ON *.* TO super@localhost;<br/>
+        <br/>
+        call CheckQuantityInStock(4);
+    </p>
+</body>
+</html>

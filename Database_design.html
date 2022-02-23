@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Design</title>
+    <link rel="stylesheet" href="Design.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="head">
+		<h1>Database Design</h1>
+	</div>
+
+
+    <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="Indledning.html">Indledning</a></li>
+        <li><a href="Database_design.html">Database Desgin</a></li>
+        <li><a href="Webteknologi.html">Webteknologi</a></li>
+        <li><a href="Database_script.html">Database script</a></li>
+        <li><a href="sql_statements.html">Simple SQL statements</a></li>
+   
+      </ul>
+
+    
+  
+    
+      <ul class="nav2">
+        <li><a href="#1NF">1NF</a></li>
+        <li><a href="#2NF">2NF</a></li>
+        <li><a href="#3NF">3NF</a></li>
+        <li><a href="#StoredProcedure">Stored Procedure</a></li>
+        <li><a href="#Trigger">Trigger</a></li>
+        <li><a href="#Transaction">Transaction</a></li>
+        <li><a href="#Brugere">Brugere</a></li>
+        <li><a href="#Privileges">Privileges</a></li>
+        <li><a href="#XML">XML</a></li>
+      </ul>
+
+      <p> 
+        <i>
+        Database Normalisering er processen med at indsamle egenskaber i form af ordnede relationer og transformere data i form af binære tabeller, og dette kaldes første normale formular.
+        </i>
+        
+    </p>
+
+<h2 id='1NF'>
+    1NF:
+</h2>
+<p>
+    I det emne vi finder mange tomte værdi i nogle kolonne i 1FN . som i order Nr, order Date og customer type. så vi bare skal bryde værdierne ind i atom værdier. Den 1Nf heller ikke multe value attributes. Den duplikerede data skal sammensættes hvis de er relaterede.så  lægger vi resten af dataene i  anden tabel.
+    Ved hjælp af formularen Første normale tilstand øges dataredundansen, da der vil være mange kolonner med de samme data i flere rækker, men hver række som helhed vil være entydig.
+    
+</p>
+<h2 id='2NF'>
+    2NF:
+</h2>
+<p>
+    til at blev 2NF ,så tabellen skal være i den første normale form.Den anden fase, vi skal se sammenhængene, er de i den første tabel er totalt afhængige eller delvist. 
+    Den anden normale form skal ikke delves afhængighed.hvor en attribut i en tabel kun afhænger af en del af den primære nøgle og ikke af hele nøglen
+    så i tabel er den primære nøgle vil være unik for hver række. de skal vær total afhængighed.Såsom række data fra denne tabel products.
+    så product-id  er PK ,og product navn , antal produkter,  unit price afhang af product-id. så  vi er i 2FN.   
+</p>
+<h2 id='3NF'>
+    3NF:
+</h2>
+<p>
+    En tabel er i tredje normalform, hvis den opfylder kravene til anden normalform, ingen af ​​dens ikke-nøglefelter er funktionelt afhængige af noget andet ikke-nøglefelt.  
+for eksempel i tabel orderline ,For at løse dette problem er vi nødt til at fjerne den transitive afhængighed, der kan gøres ved at oprette en anden tabel, f.eks.orderline, der indeholder 5 kolonner indeholder (orderline-id, order-id, product-id,antal og price)  dvs. orderline-id (som primær nøgle) og order-id , product -id er en fremmednøgle til orders, products tabellen .
+
+</p>
+<h2 id='StoredProcedure'>
+    Stored Procedure
+</h2>
+
+<p>
+    <i> I tillæg til database koden som findes i pdf dokumentet, følger disse to stored procedurer, som bliver oprettet med nedenstående kode.</i>
+<br><br>
+Den første procedurer kan bl.a. udregne totalprisen på en ordre med flere enheder af den samme vare, og den anden procedure viser en foruddefineret fejlmeddelelse, når antallet af enheder af en bestemt vare er under fem i lagerbeholdningen.
+
+</p>
+
+<h2 id='Trigger'>
+    Trigger:
+</h2>
+
+<p>
+En trigger er en mekanisme, der har til formål at udføre en handling, enten før eller efter den første handling, før man kan udløse en trigger, så skal den defineres først, og samtidigt skal det definerer, hvad der udløser en trigger.
+<br><br>
+I vores eksempel har vi defineret tre triggere, der kan udløses før en anden handling, og den handling, der udløser triggeren skal i øvrigt også defineres. I de tre triggere herunder, der skaber man først triggeren, og samtidigt definerer man, hvad der skal udløse den.
+<br><br>
+Som man kan se i koden til den første trigger, så bliver den kun udløst, hvis man laver en UPDATE på order-tabellen, og det triggeren gør, er, at den kopierer det man vil opdatere over i en anden tabel, inden den egentlige opdate bliver udført. Derved har man lavet en slags backup af de data, som man ville opdatere.
+</p>
+
+<h2 id='Transaction'>
+    Transaction:
+</h2>
+
+<p>
+    En transaction er en mekanisme, som man kan bruge i situationer, hvor det er vigtigt, at f.eks. hvis en procedure pludseligt bliver afbrudt midt i det hele og kun er blever udført halvt, måske på grund af et nedbrud, så kan man indkapsle den i en transaction og commit, og det betyder, at hvis der opstår et nedbrud under udførelsen af proceduren, så bliver udførelsen rullet tilbage, så den ikke kun er udført halvt, og derved kan proceduren starte forfra med at blive udført korrekt, når serveren er oppe at køre igen.
+<br>
+Brugen af transaction foregår på følgende måde:
+<br><br>
+<b>
+START TRANSACTION; <br>
+call CreateOrder("Testsaler", 12, 4); <br>
+COMMIT;
+</b>
+</p>
+
+<h2 id='Brugere'>
+    Brugere:
+</h2>
+
+<p>
+    Oprettelse af brugere i SQL foregår på følgende måde, og som man ser i nedenstående session, så kan man oprette flere brugere på én gang.
+<br><br>
+<b>
+drop user if exists alice@localhost, bob@localhost, super@localhost; <br>
+create user if not exists bob@localhost identified by 'test', alice@localhost identified by 'test', super@localhost identified by 'test';
+</b>
+</p>
+
+<h2 id='Privileges'>
+   
+    Privileges:
+</h2>
+
+<p>
+    Når en eller flere brugere er oprettet, så skal de tildeles nogle rettigheder, og de rettigheder sættes på følgende måde. F.eks. så ser vi, at to af brugerne får tildelt INSERT, OPDATE og DELETE rettigheder på på alle databaser og tabeller, og en tredje bruger der kun får tildelt SELECT rettigheder.
+<br><br>
+Man kan også definere rettigheder, der kun gælder en bestemt database eller entities(tabeller) i en database.
+<br><br>
+Som vi ser i den første GRANT, så kan man også her tildele flere forskellige rettigheder til flere forskellige brugere på én gang
+</p>
+
+<p>
+    <strong>
+    GRANT INSERT, UPDATE, DELETE ON *.* TO bob@localhost, alice@localhost;
+GRANT SELECT ON *.* TO super@localhost;
+</strong>
+</p>
+
+<p>
+    Det viser sig faktisk, at selv om Bob og Alice har insert, update og delete rettigheder, så har de i virkeligheden kun insert rettigheder, for det kræver faktisk select rettigheder, at udføre update og delete.
+
+</p>
+
+<p>
+    <strong>
+        insert into Customers(CustomerType) values('Bob');
+        <br>
+insert into Customers(CustomerType) values('Alice');
+    </strong>
+</p>
+
+<h2 id='XML'>
+    XML:
+</h2>
+<p>
+XML står Extensible Markup Language, og er et opmærkningssprog, hvor man selv definerer sine tags, og det bruges primært til udveksling af information mellem flere computere.
+<br><br>
+I tillæg til en XML-fil, kan man have et XML schema, som indeholder de korrekte datatyper for indholdet af XML-filen. En XML-fil har xml som filendelse, og et XML schema har xsd som filendelse.
+<br><br>
+Nedenstående to eksempler er en XML-fil som indeholder vores ordre-tabel, og et XML schema som indeholder datatyperne for indholdet i XML-filen.
+</p>
+<img src='Billede_3.jpg' alt='Billede 3'/>
+
+<p>
+    I tillæg til XML-filen, er der også et XML schema, og det ser sådan ud:
+</p>
+<img src='Billede_2.jpg' alt='Billede 2'/>
+</body>
+</html>

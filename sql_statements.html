@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webteknologi</title>
+    <link rel="stylesheet" href="Design.css">
+    <link rel="stylesheet" href="index.css">
+  
+</head>
+<body>
+
+    <div class="head">
+		<h1>Sql statements</h1>
+	</div>
+
+    <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="Indledning.html">Indledning</a></li>
+        <li><a href="Database_design.html">Database Desgin</a></li>
+        <li><a href="Webteknologi.html">Webteknologi</a></li>
+        <li><a href="Database_script.html">Database script</a></li>
+        <li><a href="sql_statements.html">Simple SQL statements</a></li>
+       
+      </ul>
+
+
+
+<p>
+    Som vi ser i den første GRANT, så kan man også her tildele flere forskellige rettigheder til flere forskellige brugere på én gang
+
+</p>
+
+<p class="database">
+    <strong>
+    GRANT INSERT, UPDATE, DELETE ON *.* TO bob@localhost, alice@localhost; <br>
+    GRANT SELECT ON *.* TO super@localhost;
+</strong>
+
+<p>
+    Det viser sig faktisk, at selv om Bob og Alice har insert, update og delete rettigheder, så har de i virkeligheden kun insert rettigheder, for det kræver faktisk select rettigheder, at udføre update og delete.
+
+</p>
+
+<p>
+    <strong>
+        insert into Customers(CustomerType) values('Bob');
+        <br>
+insert into Customers(CustomerType) values('Alice');
+    </strong>
+</p>
+</p>
+</body>
+</html>
